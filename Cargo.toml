@@ -1,0 +1,13 @@
+[package]
+name = "tokio-ssh2"
+version = "0.1.0"
+authors = ["Tyan Boot <tyanboot@outlook.com>"]
+edition = "2018"
+publish = false
+
+[dependencies]
+tokio = { version = "1", features = ["net", "io-util"] }
+ssh2 = "0.9.1"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["net", "io-util", "macros", "test-util", "rt-multi-thread"] }
