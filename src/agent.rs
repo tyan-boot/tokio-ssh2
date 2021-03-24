@@ -76,7 +76,7 @@ impl AsyncAgent {
             .await
     }
 
-    pub async fn identities(&self) -> io::Result<Vec<PublicKey>> {
+    pub fn identities(&self) -> io::Result<Vec<PublicKey>> {
         self.agent.identities().map_err(Into::into)
     }
 
