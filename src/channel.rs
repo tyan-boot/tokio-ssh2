@@ -1,13 +1,14 @@
 use std::io;
+use std::io::{Read, Write};
+use std::mem::MaybeUninit;
+use std::pin::Pin;
 use std::sync::Arc;
+use std::task::{Context, Poll};
 
 use ssh2::{
     BlockDirections, Channel, ExitSignal, ExtendedData, PtyModes, ReadWindow, Session, Stream,
     WriteWindow,
 };
-use std::io::{Read, Write};
-use std::pin::Pin;
-use std::task::{Context, Poll};
 use tokio::io::{AsyncRead, AsyncWrite, Interest, ReadBuf};
 use tokio::net::TcpStream;
 
@@ -224,14 +225,22 @@ impl AsyncRead for AsyncStream {
         let stream = &mut self.stream;
         loop {
             match io.poll_read_ready(cx)? {
-                Poll::Ready(_) => match stream.read(buf.initialize_unfilled()) {
-                    Ok(r) => {
-                        buf.set_filled(r);
-                        return Poll::Ready(Ok(()));
+                Poll::Ready(_) => {
+                    let b = unsafe {
+                        &mut *(buf.unfilled_mut() as *mut [MaybeUninit<u8>] as *mut [u8])
+                    };
+                    match stream.read(b) {
+                        Ok(r) => {
+                            unsafe {
+                                buf.assume_init(r);
+                            }
+                            buf.advance(r);
+                            return Poll::Ready(Ok(()));
+                        }
+                        Err(e) if e.kind() == io::ErrorKind::WouldBlock => {}
+                        Err(e) => return Poll::Ready(Err(e)),
                     }
-                    Err(e) if e.kind() == io::ErrorKind::WouldBlock => {}
-                    Err(e) => return Poll::Ready(Err(e)),
-                },
+                }
                 Poll::Pending => return Poll::Pending,
             }
         }

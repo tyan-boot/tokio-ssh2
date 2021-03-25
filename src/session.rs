@@ -13,9 +13,9 @@ use tokio::io::Interest;
 use tokio::net::TcpStream;
 
 use crate::agent::AsyncAgent;
-use crate::AsyncListener;
 use crate::channel::AsyncChannel;
 use crate::sftp::AsyncSftp;
+use crate::AsyncListener;
 
 pub struct AsyncSession {
     session: Session,
@@ -101,7 +101,7 @@ impl AsyncSession {
                 .userauth_password(username, password)
                 .map_err(Into::into)
         })
-            .await
+        .await
     }
 
     pub async fn userauth_keyboard_interactive<P: KeyboardInteractivePrompt>(
@@ -114,7 +114,7 @@ impl AsyncSession {
                 .userauth_keyboard_interactive(username, prompter)
                 .map_err(Into::into)
         })
-            .await
+        .await
     }
 
     pub async fn userauth_agent(&self, username: &str) -> io::Result<()> {
@@ -134,7 +134,7 @@ impl AsyncSession {
                 .userauth_pubkey_file(username, pubkey, privatekey, passphrase)
                 .map_err(Into::into)
         })
-            .await
+        .await
     }
 
     pub async fn userauth_pubkey_memory(
@@ -149,7 +149,7 @@ impl AsyncSession {
                 .userauth_pubkey_memory(username, pubkeydata, privatekeydata, passphrase)
                 .map_err(Into::into)
         })
-            .await
+        .await
     }
 
     pub async fn userauth_hostbased_file(
@@ -173,7 +173,7 @@ impl AsyncSession {
                 )
                 .map_err(Into::into)
         })
-            .await
+        .await
     }
 
     pub fn authenticated(&self) -> bool {
@@ -371,6 +371,6 @@ impl AsyncSession {
                 .disconnect(reason, description, lang)
                 .map_err(Into::into)
         })
-            .await
+        .await
     }
 }
