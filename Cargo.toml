@@ -1,6 +1,9 @@
 [package]
 name = "tokio-ssh2"
 version = "0.1.0"
+description = "asynchronous SSH2 for tokio"
+keywords = ["ssh", "asynchronous", "tokio"]
+categories = ["network-programming", "api-bindings", "asynchronous"]
 authors = ["Tyan Boot <tyanboot@outlook.com>"]
 edition = "2018"
 publish = false
